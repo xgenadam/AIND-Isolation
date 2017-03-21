@@ -7,7 +7,7 @@ You must test your agent's strength against a set of agents with known
 relative strength using tournament.py and include the results in your report.
 """
 import random
-
+import utils
 
 class Timeout(Exception):
     """Subclass base exception for code clarity."""
@@ -172,8 +172,29 @@ class CustomPlayer:
         if self.time_left() < self.TIMER_THRESHOLD:
             raise Timeout()
 
-        # TODO: finish this function!
-        raise NotImplementedError
+        print(depth)
+        # # TODO: finish this function!
+        # raise NotImplementedError
+
+        if maximizing_player is True:
+            player = game.active_player
+        else:
+            player = game.inactive_player
+
+        tree_root = utils.Node(parent=None, board=game.copy(), depth=0)
+        node_list = [tree_root,]
+
+        layer = node_list
+        for d in range(depth):
+            print('depth :{}, num nodes: {}'.format(d, len(layer)))
+            # import pdb; pdb.set_trace()
+            layer = utils.next_moveset(layer)
+
+        for node in layer:
+            print ('eg')
+            node.utility = self.score(node.board, player)
+
+        return tree_root.minimax_score
 
     def alphabeta(self, game, depth, alpha=float("-inf"), beta=float("inf"), maximizing_player=True):
         """Implement minimax search with alpha-beta pruning as described in the
