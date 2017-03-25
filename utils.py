@@ -28,7 +28,6 @@ class Node(object):
         for child in self.children:
             child.maximin(not maximize)
 
-
         if maximize is True:
             score_func = max
         else:

@@ -172,29 +172,37 @@ class CustomPlayer:
         if self.time_left() < self.TIMER_THRESHOLD:
             raise Timeout()
 
-        print(depth)
-        # # TODO: finish this function!
-        # raise NotImplementedError
-
         if maximizing_player is True:
             player = game.active_player
         else:
             player = game.inactive_player
 
-        tree_root = utils.Node(parent=None, board=game.copy(), depth=0)
-        node_list = [tree_root,]
+        best_score, best_move = None, None
 
-        layer = node_list
-        for d in range(depth):
-            print('depth :{}, num nodes: {}'.format(d, len(layer)))
-            # import pdb; pdb.set_trace()
-            layer = utils.next_moveset(layer)
+        if depth <= 0:
+            score = self.score(game, player)
+            return score, None
 
-        for node in layer:
-            print ('eg')
-            node.utility = self.score(node.board, player)
+        depth -= 1
 
-        return tree_root.minimax_score
+        try:
+            # print(depth, game.get_legal_moves())
+            for move in game.get_legal_moves():
+                resultant_board = game.forecast_move(move)
+                score, following_move = self.minimax(resultant_board, depth, not maximizing_player)
+                if best_score is None:
+                    best_score = score
+                    best_move = move
+                elif maximizing_player is True and score > best_score:
+                    best_score = score
+                    best_move = move
+                elif maximizing_player is False and score < best_score:
+                    best_score = score
+                    best_move = move
+        except Timeout:
+            pass
+
+        return best_score, best_move
 
     def alphabeta(self, game, depth, alpha=float("-inf"), beta=float("inf"), maximizing_player=True):
         """Implement minimax search with alpha-beta pruning as described in the
