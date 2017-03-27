@@ -118,25 +118,35 @@ class CustomPlayer:
 
         self.time_left = time_left
 
-        # TODO: finish this function!
-
         # Perform any required initializations, including selecting an initial
         # move from the game board (i.e., an opening book), or returning
         # immediately if there are no legal moves
-
-        try:
-            # The search method call (alpha beta or minimax) should happen in
-            # here in order to avoid timeout. The try/except block will
-            # automatically catch the exception raised by the search method
-            # when the timer gets close to expiring
-            pass
-
-        except Timeout:
-            # Handle any actions required at timeout, if necessary
-            pass
-
+        best_score = float('-inf')
+        best_move = None
+        depth = 0
+        method = getattr(self, self.method)
+        while True:
+            try:
+                # The search method call (alpha beta or minimax) should happen in
+                # here in order to avoid timeout. The try/except block will
+                # automatically catch the exception raised by the search method
+                # when the timer gets close to expiring
+                for move in legal_moves:
+                    score, _ = method(game=game.forecast_move(move),
+                                              depth=depth,
+                                              maximizing_player=False)
+                    if score > best_score:
+                        best_score = score
+                        best_move = move
+            except Timeout:
+                # Handle any actions required at timeout, if necessary
+                break
+            depth += 1
+            if self.iterative is not True:
+                break
+        assert best_move in legal_moves
         # Return the best move from the last completed search iteration
-        raise NotImplementedError
+        return best_move
 
     def minimax(self, game, depth, maximizing_player=True):
         """Implement the minimax search algorithm as described in the lectures.
@@ -185,21 +195,18 @@ class CustomPlayer:
 
         depth -= 1
 
-        try:
-            for move in game.get_legal_moves():
-                resultant_board = game.forecast_move(move)
-                score, following_move = self.minimax(resultant_board, depth, not maximizing_player)
-                if best_score is None:
-                    best_score = score
-                    best_move = move
-                elif maximizing_player is True and score > best_score:
-                    best_score = score
-                    best_move = move
-                elif maximizing_player is False and score < best_score:
-                    best_score = score
-                    best_move = move
-        except Timeout:
-            pass
+        for move in game.get_legal_moves():
+            resultant_board = game.forecast_move(move)
+            score, following_move = self.minimax(resultant_board, depth, not maximizing_player)
+            if best_score is None:
+                best_score = score
+                best_move = move
+            elif maximizing_player is True and score > best_score:
+                best_score = score
+                best_move = move
+            elif maximizing_player is False and score < best_score:
+                best_score = score
+                best_move = move
 
         return best_score, best_move
 
@@ -257,34 +264,30 @@ class CustomPlayer:
 
         depth -= 1
 
-        try:
-            for move in game.get_legal_moves():
-                resultant_board = game.forecast_move(move)
-                score, following_move = self.alphabeta(resultant_board, depth, alpha, beta, not maximizing_player)
-                if best_score is None:
+        for move in game.get_legal_moves():
+            resultant_board = game.forecast_move(move)
+            score, following_move = self.alphabeta(resultant_board, depth, alpha, beta, not maximizing_player)
+            if best_score is None:
+                best_score = score
+                best_move = move
+
+            if maximizing_player is True:
+                if score > best_score:
                     best_score = score
                     best_move = move
+                if score > alpha:
+                    alpha = score
 
-                if maximizing_player is True:
-                    if score > best_score:
-                        best_score = score
-                        best_move = move
-                    if score > alpha:
-                        alpha = score
+                if score >= beta:
+                    break
+            if maximizing_player is False:
+                if score < best_score:
+                    best_score = score
+                    best_move = move
+                if score < beta:
+                    beta = score
 
-                    if score >= beta:
-                        break
-                if maximizing_player is False:
-                    if score < best_score:
-                        best_score = score
-                        best_move = move
-                    if score < beta:
-                        beta = score
-
-                    if score <= alpha:
-                        break
-
-        except Timeout:
-            pass
+                if score <= alpha:
+                    break
 
         return best_score, best_move
