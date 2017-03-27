@@ -186,7 +186,6 @@ class CustomPlayer:
         depth -= 1
 
         try:
-            # print(depth, game.get_legal_moves())
             for move in game.get_legal_moves():
                 resultant_board = game.forecast_move(move)
                 score, following_move = self.minimax(resultant_board, depth, not maximizing_player)
@@ -245,5 +244,47 @@ class CustomPlayer:
         if self.time_left() < self.TIMER_THRESHOLD:
             raise Timeout()
 
-        # TODO: finish this function!
-        raise NotImplementedError
+        if maximizing_player is True:
+            player = game.active_player
+        else:
+            player = game.inactive_player
+
+        best_score, best_move = None, None
+
+        if depth <= 0:
+            score = self.score(game, player)
+            return score, None
+
+        depth -= 1
+
+        try:
+            for move in game.get_legal_moves():
+                resultant_board = game.forecast_move(move)
+                score, following_move = self.alphabeta(resultant_board, depth, alpha, beta, not maximizing_player)
+                if best_score is None:
+                    best_score = score
+                    best_move = move
+
+                if maximizing_player is True:
+                    if score > best_score:
+                        best_score = score
+                        best_move = move
+                    if score > alpha:
+                        alpha = score
+
+                    if score >= beta:
+                        break
+                if maximizing_player is False:
+                    if score < best_score:
+                        best_score = score
+                        best_move = move
+                    if score < beta:
+                        beta = score
+
+                    if score <= alpha:
+                        break
+
+        except Timeout:
+            pass
+
+        return best_score, best_move
