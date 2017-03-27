@@ -38,7 +38,7 @@ def custom_score(game, player):
     """
 
     # TODO: finish this function!
-    raise NotImplementedError
+    return float(len(game.get_legal_moves(player)))
 
 
 class CustomPlayer:
@@ -125,6 +125,8 @@ class CustomPlayer:
         best_move = None
         depth = 0
         method = getattr(self, self.method)
+        if not legal_moves:
+            return (-1, -1)
         while True:
             try:
                 # The search method call (alpha beta or minimax) should happen in
@@ -188,7 +190,6 @@ class CustomPlayer:
             player = game.inactive_player
 
         best_score, best_move = None, None
-
         if depth <= 0:
             score = self.score(game, player)
             return score, None
@@ -264,7 +265,11 @@ class CustomPlayer:
 
         depth -= 1
 
-        for move in game.get_legal_moves():
+        legal_moves = game.get_legal_moves()
+        if not legal_moves:
+            return float('-inf'), (-1, -1)
+
+        for move in legal_moves:
             resultant_board = game.forecast_move(move)
             score, following_move = self.alphabeta(resultant_board, depth, alpha, beta, not maximizing_player)
             if best_score is None:
