@@ -38,7 +38,21 @@ def custom_score(game, player):
     """
 
     # TODO: finish this function!
-    return float(len(game.get_legal_moves(player)))
+    len_moves = False
+    ratio_score = False
+
+    # len_moves = True
+    if len_moves is True:
+        return float(len(game.get_legal_moves(player))) + game.utility(player)
+
+    ratio_score = True
+    if ratio_score is True:
+        other_player = game.active_player \
+            if game.active_player is not player else game.inactive_player
+
+        return (game.get_legal_moves(player)
+                / game.get_legal_moves(other_player) + game.utility(player))
+
 
 
 class CustomPlayer:
