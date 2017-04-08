@@ -6,8 +6,16 @@ augment the test suite with your own test cases to further test your code.
 You must test your agent's strength against a set of agents with known
 relative strength using tournament.py and include the results in your report.
 """
+import numpy as np
 import random
 import utils
+
+from copy import deepcopy
+
+
+UP = None
+DOWN = None
+
 
 class Timeout(Exception):
     """Subclass base exception for code clarity."""
@@ -40,12 +48,13 @@ def custom_score(game, player):
     # TODO: finish this function!
     len_moves = False
     ratio_score = False
+    area_score = False
 
     # len_moves = True
     if len_moves is True:
         return float(len(game.get_legal_moves(player))) + game.utility(player)
 
-    ratio_score = True
+    # ratio_score = True
     if ratio_score is True:
         other_player = game.active_player \
             if game.active_player is not player else game.inactive_player
@@ -53,6 +62,19 @@ def custom_score(game, player):
         return (game.get_legal_moves(player)
                 / game.get_legal_moves(other_player) + game.utility(player))
 
+    area_score = True
+    if area_score is True:
+        print('none')
+        location = game.get_player_location(player)
+        board_2d = utils.Game2D(game)
+        neighbour_array = utils.NeighbourArray.build_array(board_2d)
+
+        cluster = utils.NeighbourArray.get_location_cluster(
+            neighbour_array=neighbour_array,
+            location=location, board_width=board_2d.width
+        )
+
+        return float(len(cluster)) + game.utility(player)
 
 
 class CustomPlayer:
