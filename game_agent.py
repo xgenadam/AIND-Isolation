@@ -10,12 +10,15 @@ import numpy as np
 import random
 import utils
 
+<<<<<<< HEAD
 from copy import deepcopy
 
 
 UP = None
 DOWN = None
 
+=======
+>>>>>>> 5494db84b9be5a4c5aa98cf7daca7a61e60d4c79
 
 class Timeout(Exception):
     """Subclass base exception for code clarity."""
@@ -59,8 +62,10 @@ def custom_score(game, player):
         other_player = game.active_player \
             if game.active_player is not player else game.inactive_player
 
-        return (game.get_legal_moves(player)
-                / game.get_legal_moves(other_player) + game.utility(player))
+        other_player_legal_moves = len(game.get_legal_moves(other_player))
+        if other_player_legal_moves == 0:
+            return float('inf')
+        player_legal_moves = len(game.get_legal_moves(player))
 
     area_score = True
     if area_score is True:
@@ -115,7 +120,7 @@ class CustomPlayer:
         self.score = score_fn
         self.method = method
         self.time_left = None
-        self.TIMER_THRESHOLD = timeout
+        self.TIMER_THRESHOLD = timeout - 0.1
 
     def get_move(self, game, legal_moves, time_left):
         """Search for the best move from the available legal moves and return a
