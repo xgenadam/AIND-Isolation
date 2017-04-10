@@ -6,19 +6,8 @@ augment the test suite with your own test cases to further test your code.
 You must test your agent's strength against a set of agents with known
 relative strength using tournament.py and include the results in your report.
 """
-import numpy as np
-import random
 import utils
-
-<<<<<<< HEAD
-from copy import deepcopy
-
-
-UP = None
-DOWN = None
-
-=======
->>>>>>> 5494db84b9be5a4c5aa98cf7daca7a61e60d4c79
+import numpy as np
 
 class Timeout(Exception):
     """Subclass base exception for code clarity."""
@@ -49,9 +38,21 @@ def custom_score(game, player):
     """
 
     # TODO: finish this function!
+
+    if game.is_winner(player):
+        return float('inf')
+
+    elif game.is_loser(player):
+        return float('-inf')
+
+    return float(len(game.get_legal_moves(player)) - 2 * len(game.get_legal_moves(game.get_opponent(player))))  # + game.utility(player)
+
     len_moves = False
     ratio_score = False
     area_score = False
+    composite = False
+    direction_of_movement = False
+    axis_heuristic = False
 
     # len_moves = True
     if len_moves is True:
@@ -67,9 +68,9 @@ def custom_score(game, player):
             return float('inf')
         player_legal_moves = len(game.get_legal_moves(player))
 
-    area_score = True
+    # area_score = True
     if area_score is True:
-        print('none')
+        # print('none')
         location = game.get_player_location(player)
         board_2d = utils.Game2D(game)
         neighbour_array = utils.NeighbourArray.build_array(board_2d)
@@ -79,7 +80,100 @@ def custom_score(game, player):
             location=location, board_width=board_2d.width
         )
 
+        # import pdb; pdb.set_trace()
+
         return float(len(cluster)) + game.utility(player)
+
+    # composite = True
+    if composite is True:
+        location = game.get_player_location(player)
+        board_2d = utils.Game2D(game)
+        neighbour_array = utils.NeighbourArray.build_array(board_2d)
+
+        cluster = utils.NeighbourArray.get_location_cluster(
+            neighbour_array=neighbour_array,
+            location=location, board_width=board_2d.width
+        )
+
+        return float(len(game.get_legal_moves(player))) + game.utility(player) + len(cluster)
+
+    # direction_of_movement = True
+    if direction_of_movement is True:
+        player_legal_moves = len(game.get_legal_moves(player))
+        location = game.get_player_location(player)
+        num_blank_surrounding = 0
+        for x, y in utils.Directions2D:
+            x_prime = location[0] + x
+            y_prime = location[1] + y
+            if 0 > x_prime or x_prime >= game.width or 0 > y_prime or y_prime >= game.height:
+                try:
+                    idx = (y_prime * game.height) + x_prime
+                    print(game._board_state[idx])
+                except:
+                    continue
+                raise Exception
+            num_blank_surrounding += 1
+        return float(player_legal_moves + num_blank_surrounding + game.utility(player))
+
+    axis_heuristic = True
+    if axis_heuristic is True:
+        return axis_move_product(game, player)
+
+
+def axis_move_product(game, player):
+    x, y = game.get_player_location(player)
+
+    up_count = 1
+    for offset in range(game.height - y):
+        if not game.move_is_legal(move=[x, y + offset]):
+            break
+        up_count += 1
+
+    down_count = 1
+    for offset in range(y):
+        if not game.move_is_legal(move=[x, y - offset]):
+            break
+        down_count += 1
+
+    left_count = 1
+    for offset in range(x):
+        if not game.move_is_legal(move=[x - offset, y]):
+            break
+        left_count += 1
+
+    right_count = 1
+    for offset in range(game.width - x):
+        if not game.move_is_legal(move=[x + offset, y]):
+            break
+        right_count += 1
+
+    up_left_count = 1
+    for offset_x, offset_y in zip(range(x), range(game.height - y)):
+       if not game.move_is_legal(move=[x - offset_x, y + offset_y]):
+           break
+       up_left_count += 1
+
+    up_right_count = 1
+    for offset_x, offset_y in zip(range(game.width - x), range(game.height - y)):
+        if not game.move_is_legal(move=[x + offset_x, y + offset_y]):
+            break
+        up_right_count += 1
+
+    down_left_count = 1
+    for offset_x, offset_y in zip(range(x), range(y)):
+        if not game.move_is_legal(move=[x - offset_x, y - offset_y]):
+            break
+        down_left_count += 1
+
+    down_right_count = 1
+    for offset_x, offset_y in zip(range(game.width -x), range(y)):
+        if not game.move_is_legal(move=[x + offset_x, y - offset_y]):
+            break
+        down_right_count += 1
+
+    return up_count * down_count * left_count * right_count * up_left_count * up_right_count * down_left_count * down_right_count
+
+
 
 
 class CustomPlayer:

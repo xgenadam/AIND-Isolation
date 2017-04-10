@@ -1,4 +1,4 @@
-from enum import Enum
+from collections import OrderedDict
 from itertools import chain
 import numpy as np
 
@@ -63,19 +63,16 @@ class NeighbourArray(object):
                 cell_1_idx = y_1 * width + x_1
 
                 for direction in Directions2D.values():
-                    try:
-                        y_2 = direction[0] + y_1
-                        x_2 = direction[1] + x_1
-                        if x_2 < 0 or y_2 < 0 or \
-                                x_2 > width or y_2 > height \
-                                and array_2d.board[y_2][x_2] != comp_val:
-                            continue
-                        cell_2_idx = y_2 * width + x_2
-                        neighbour_array[cell_1_idx][cell_2_idx] = 1
-                    except Exception as e:
-                        import pdb; pdb.set_trace()
+                    y_2 = direction[0] + y_1
+                    x_2 = direction[1] + x_1
+                    if (x_2 < 0 or y_2 < 0 or
+                            x_2 >= width or y_2 >= height) \
+                            or array_2d.board[y_2][x_2] != comp_val:
+                        continue
+                    cell_2_idx = y_2 * width + x_2
+                    neighbour_array[cell_1_idx][cell_2_idx] = 1
 
-        assert neighbour_array == neighbour_array.transpose()\
+        # assert neighbour_array == neighbour_array.transpose()\
 
         return neighbour_array
 
@@ -88,20 +85,25 @@ class NeighbourArray(object):
         if array_shape is None:
             array_shape = neighbour_array.shape
 
-        location_idx = location[0] * array_shape[1] + location[1]
-
+        location_idx = (location[0] - 1) * board_width + location[1] - 1
         row = neighbour_array[location_idx]
 
-        relevant_neighbours = filter(lambda idx, val, max_idx=location_idx,
+        relevant_neighbours = filter(lambda idx_val, max_idx=location_idx,
                                             cluster=cluster:
-                                     (val == 1 and
-                                      idx < max_idx and
-                                      idx not in cluster),
+                                     (idx_val[1] == 1 and
+                                      idx_val[0] < max_idx and
+                                      idx_val[0] not in cluster),
                                      enumerate(row))
 
-        neighbour_locations = map(lambda idx, val, board_width=board_width:
-                                  Game2D.get_grid_from_1d_index(idx, board_width),
+        neighbour_locations = map(lambda idx_val, board_width=board_width:
+                                  Game2D.get_grid_from_1d_index(idx_val[0], board_width),
                                   relevant_neighbours)
+
+        # print(len(list(neighbour_locations)))
+
+        # if len(list(neighbour_locations)) < 2:
+        #     return cluster
+
 
         cluster.update(neighbour_locations)
 

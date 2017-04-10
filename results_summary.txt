@@ -1,0 +1,12 @@
+./free_space_area_score_heuristic_results.txt
+ID_Improved         80.00%
+Student             51.43%
+
+./move_list_len_heuristic_results.txt
+ID_Improved         84.29%
+Student             75.00%
+
+./ratio_score_heuristic_results.txt
+ID_Improved         83.57%
+Student             69.29%
+
