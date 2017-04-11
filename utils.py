@@ -22,10 +22,10 @@ class Game2D(object):
     BLANK = Board.BLANK
 
     def __init__(self, game):
-        board = np.zeros(shape=(game.width, game.height), dtype=int)
-        for x in range(game.width):
-            for y in range(game.height):
-                cell_idx = y * game.height + x
+        board = np.zeros(shape=(game.height, game.width), dtype=int)
+        for y in range(game.height):
+            for x in range(game.width):
+                cell_idx = y * game.width + x
                 board[y][x] = game._board_state[cell_idx]
 
         self.board = board
@@ -49,31 +49,45 @@ class NeighbourArray(object):
     @staticmethod
     def build_array(array_2d, grouping=None):
         height, width = array_2d.board.shape
+        print(width, height)
         num_cells = height * width
         neighbour_array = np.zeros(shape=(num_cells, num_cells), dtype=int)
         if grouping is None:
             comp_val = Game2D.BLANK
-
+        else:
+            comp_val = grouping
+        count = 0
+        locations = set()
         for y_1 in range(height):
             for x_1 in range(width):
+                if y_1 == 0 and x_1 == (width - 1):
+                    import pdb;
+                    pdb.set_trace()
+
                 cell_1_val = array_2d.board[y_1][x_1]
                 if cell_1_val != comp_val:
                     continue
-
                 cell_1_idx = y_1 * width + x_1
-
-                for direction in Directions2D.values():
-                    y_2 = direction[0] + y_1
-                    x_2 = direction[1] + x_1
-                    if (x_2 < 0 or y_2 < 0 or
-                            x_2 >= width or y_2 >= height) \
-                            or array_2d.board[y_2][x_2] != comp_val:
-                        continue
-                    cell_2_idx = y_2 * width + x_2
-                    neighbour_array[cell_1_idx][cell_2_idx] = 1
-
-        # assert neighbour_array == neighbour_array.transpose()\
-
+                for delta_y in [-1, 0, 1]:
+                    y_2 = y_1 + delta_y
+                    if 0 <= y_2 < height:
+                        for delta_x in [-1, 0, 1]:
+                            x_2 = x_1 + delta_x
+                            # try:
+                            if 0 <= x_2 < width:
+                                if array_2d.board[y_2][x_2] == comp_val:
+                                    cell_2_idx = y_2 * width + x_2
+                                    # print(cell_2_idx)
+                                    neighbour_array[cell_1_idx][cell_2_idx] = 1
+                                    locations.update([(cell_1_idx, cell_2_idx)])
+                                    count += 1
+                                else:
+                                    import pdb;
+                                    pdb.set_trace()
+                                    # except Exception as e:
+                                    #     import pdb; pdb.set_trace()
+                                    #     print(x_2, y_2)
+        pp(locations)
         return neighbour_array
 
     @staticmethod
