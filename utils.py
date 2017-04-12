@@ -49,7 +49,6 @@ class NeighbourArray(object):
     @staticmethod
     def build_array(array_2d, grouping=None):
         height, width = array_2d.board.shape
-        print(width, height)
         num_cells = height * width
         neighbour_array = np.zeros(shape=(num_cells, num_cells), dtype=int)
         if grouping is None:
@@ -60,10 +59,6 @@ class NeighbourArray(object):
         locations = set()
         for y_1 in range(height):
             for x_1 in range(width):
-                if y_1 == 0 and x_1 == (width - 1):
-                    import pdb;
-                    pdb.set_trace()
-
                 cell_1_val = array_2d.board[y_1][x_1]
                 if cell_1_val != comp_val:
                     continue
@@ -77,17 +72,9 @@ class NeighbourArray(object):
                             if 0 <= x_2 < width:
                                 if array_2d.board[y_2][x_2] == comp_val:
                                     cell_2_idx = y_2 * width + x_2
-                                    # print(cell_2_idx)
                                     neighbour_array[cell_1_idx][cell_2_idx] = 1
-                                    locations.update([(cell_1_idx, cell_2_idx)])
+                                    locations.update([(cell_2_idx, cell_1_idx)])
                                     count += 1
-                                else:
-                                    import pdb;
-                                    pdb.set_trace()
-                                    # except Exception as e:
-                                    #     import pdb; pdb.set_trace()
-                                    #     print(x_2, y_2)
-        pp(locations)
         return neighbour_array
 
     @staticmethod
@@ -99,25 +86,16 @@ class NeighbourArray(object):
         if array_shape is None:
             array_shape = neighbour_array.shape
 
-        location_idx = (location[0] - 1) * board_width + location[1] - 1
+        location_idx = (location[0]) * board_width + location[1]
         row = neighbour_array[location_idx]
 
-        relevant_neighbours = filter(lambda idx_val, max_idx=location_idx,
-                                            cluster=cluster:
-                                     (idx_val[1] == 1 and
-                                      idx_val[0] < max_idx and
-                                      idx_val[0] not in cluster),
-                                     enumerate(row))
+        relevant_neighbours = [(idx, val) for (idx, val) in enumerate(row)
+                               if val == 1 and idx not in cluster]
 
-        neighbour_locations = map(lambda idx_val, board_width=board_width:
-                                  Game2D.get_grid_from_1d_index(idx_val[0], board_width),
-                                  relevant_neighbours)
+        neighbour_locations = [Game2D.get_grid_from_1d_index(idx, board_width)
+                               for (idx, val) in relevant_neighbours]
 
-        # print(len(list(neighbour_locations)))
-
-        # if len(list(neighbour_locations)) < 2:
-        #     return cluster
-
+        neighbour_locations = [location for location in neighbour_locations if location not in cluster]
 
         cluster.update(neighbour_locations)
 
