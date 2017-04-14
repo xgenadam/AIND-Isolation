@@ -13,6 +13,9 @@ import sys
 
 import isolation
 import game_agent
+import utils
+
+import numpy as np
 
 from collections import Counter
 from copy import copy
@@ -235,7 +238,7 @@ class Project1Test(unittest.TestCase):
         board.apply_move(loc2)
         return agentUT, board
 
-    # @timeout(TIMEOUT)
+    @timeout(TIMEOUT)
     # @unittest.skip("Skip eval function test.")  # Uncomment this line to skip test
     def test_heuristic(self):
         """Test output interface of heuristic score function interface."""
@@ -544,6 +547,41 @@ class Project1Test(unittest.TestCase):
             self.assertTrue(chosen_move in legal_moves, INVALID_MOVE.format(
                 legal_moves, chosen_move))
 
+
+class ClusterTest(unittest.TestCase):
+    def setUp(self):
+        self.game_width = 2
+        self.game_height = 3
+        self.game = isolation.Board(player_1=None,
+                                    player_2=None,
+                                    width=self.game_width,
+                                    height=self.game_height)
+
+        self.game_2d = utils.Game2D(self.game)
+
+    def test_game_2d(self):
+        game_2d = utils.Game2D(self.game)
+        self.assertIsInstance(game_2d.board, np.ndarray)
+        ideal_array = np.zeros(shape=(self.game_height, self.game_width), dtype=int)
+        np.testing.assert_array_equal(game_2d.board, ideal_array)
+
+        self.game._board_state[0] = 1
+        game_2d = utils.Game2D(self.game)
+        ideal_array[0][0] = 1
+        np.testing.assert_array_equal(game_2d.board, ideal_array)
+
+    def test_neighbour_array(self):
+        neighbour_array = utils.NeighbourArray.build_array(self.game_2d)
+        self.assertEqual(neighbour_array.dtype, int)
+        ideal_neighbour_array = np.array([
+            [1, 1, 1, 1, 0, 0],
+            [1, 1, 1, 1, 0, 0],
+            [1, 1, 1, 1, 1, 1],
+            [1, 1, 1, 1, 1, 1],
+            [0, 0, 1, 1, 1, 1],
+            [0, 0, 1, 1, 1, 1]], dtype=int)
+
+        np.testing.assert_array_equal(neighbour_array, ideal_neighbour_array)
 
 if __name__ == '__main__':
     unittest.main()

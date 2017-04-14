@@ -86,16 +86,12 @@ class NeighbourArray(object):
         if array_shape is None:
             array_shape = neighbour_array.shape
 
-        location_idx = (location[0]) * board_width + location[1]
+        location_idx = Game2D.get_1d_idx_from_grid(location, board_width)
         row = neighbour_array[location_idx]
 
-        relevant_neighbours = [(idx, val) for (idx, val) in enumerate(row)
-                               if val == 1 and idx not in cluster]
+        neighbours = NeighbourArray._get_relevant_neighbours(row)
 
-        neighbour_locations = [Game2D.get_grid_from_1d_index(idx, board_width)
-                               for (idx, val) in relevant_neighbours]
-
-        neighbour_locations = [location for location in neighbour_locations if location not in cluster]
+        neighbour_locations = NeighbourArray._get_neighbour_locations(neighbours, cluster, board_width)
 
         cluster.update(neighbour_locations)
 
@@ -109,6 +105,21 @@ class NeighbourArray(object):
 
         return cluster
 
+    @staticmethod
+    def _get_relevant_neighbours(row):
+        relevant_neighbours = [(idx, val) for (idx, val) in enumerate(row)
+                               if val == 1]
+        return relevant_neighbours
+
+    @staticmethod
+    def _get_neighbour_locations(neighbours, cluster, board_width):
+        neighbour_locations = [Game2D.get_grid_from_1d_index(idx, board_width)
+                               for (idx, val) in neighbours]
+
+        neighbour_locations = [location for location in neighbour_locations if
+                               location not in cluster]
+
+        return neighbour_locations
 
 class Node(object):
     def __init__(self, parent, board, move=None, depth=None, children=None, player=None):
