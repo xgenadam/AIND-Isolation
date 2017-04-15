@@ -583,5 +583,19 @@ class ClusterTest(unittest.TestCase):
 
         np.testing.assert_array_equal(neighbour_array, ideal_neighbour_array)
 
+    def test_cluster(self):
+        neighbour_array = utils.NeighbourArray.build_array(self.game_2d)
+        cluster = utils.NeighbourArray.get_location_cluster(neighbour_array, [0, 0], board_width=self.game_width)
+        self.assertEqual(len(cluster), self.game_width * self.game_height)
+
+        self.game_2d.board[1][0] = 1
+        self.game_2d.board[1][1] = 1
+
+        neighbour_array = utils.NeighbourArray.build_array(self.game_2d)
+
+        cluster = utils.NeighbourArray.get_location_cluster(neighbour_array, [0, 0], board_width=self.game_width)
+        self.assertEqual(len(cluster), self.game_width)
+
+
 if __name__ == '__main__':
     unittest.main()

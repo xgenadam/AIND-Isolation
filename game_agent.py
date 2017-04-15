@@ -45,8 +45,7 @@ def custom_score(game, player):
     elif game.is_loser(player):
         return float('-inf')
 
-    return heuristics.heuristic_adversarial(game, player)
-
+    return heuristics.axis_movement_adversarial(game, player)
 
 
 class CustomPlayer:

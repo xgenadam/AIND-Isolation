@@ -121,6 +121,7 @@ class NeighbourArray(object):
 
         return neighbour_locations
 
+
 class Node(object):
     def __init__(self, parent, board, move=None, depth=None, children=None, player=None):
         self.parent = parent
