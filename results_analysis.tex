@@ -47,11 +47,12 @@ Similar to the number of available moves this method attempts to get more granul
 
 
 \subsection{Adversarial implementation}
-The above heuristics do not take into account adequately the opponent state. When minimax takes this into account this is relatively more expensive as the bulk of computational expense is is in the last layer of the explored space. The solution is to lazily factor in the opponent by applying the same heuristic to the opponent, multiplied by an arbitrary coefficient prioritizing the relevance of the opponent state (or not), as if it were the opponent turn.
+The above heuristics do not take into account adequately the opponent state. When minimax takes this into account this is relatively more expensive as the bulk of computational expense is is in the last layer of the explored space. The solution is to lazily factor in the opponent by applying the same heuristic to the opponent, multiplied by an arbitrary priority coefficient (this is to emphasize/deemphasize the opponents state on the board), as if it were the opponent turn.
 
 % Composites
 
 \section{Results (adversarial results only)}
+NB: all coefficient multiplier for all methods was 2
 \subsection{Number of available moves}
 \begin{verbatim}
 *************************
@@ -178,9 +179,13 @@ Student             37.86%
 \end{verbatim}
 
 \section{Discussion}
+The only method to beat ID\_Improved was the number of available moves. The only difference this had to the ID\_improved is the priority coefficient. While this method is simple it is fast allowing for many layers of depth to be explored in minimax/iterative deepening.
 
+Initially the area based heuristic was thought to be promising but its dismal performance is likely due to two main factors, it is computationally expensive and only captures valuable information later in the game. Initially there will only be a single cluster of empty space and any move within this heuristic will not reflect whether a move is good or bad except at points where sections of the board can be cut off.
+
+The axis based heuristic also performs poorly, and this surprising as it is the algorithm that is most likely to generate an initially centered move which is one of the more strategically sound opening moves. The disparity in score to the movement heuristic are surprising given their similarities. Given that this is more computationally expensive there was always a chance that it was going to perform slightly worse however the difference in score ($37.86\% vs 78.57\%$) is far too great for that. The most likely explanation is that the fundamental assumption on which it is based -- maximizing movement in all axis is flawed. This makes sense as this would cause the agent to try to stay as central to the board as possible, not strategically sound. Perhaps if the author had been less sleep deprived when conceiving of this he would have realized before implementation...
 
 \section{Conclusion}
-
+The best heuristic to use is the number of moves available to the agent taking less the scaled number of opponent moves. It abstractly captures the fundamental concept of the game, from a high level allowing minimax/iterative deepening to do the heavy bulk of the work. It is likely not the best strategy, different stages of the game may require different strategies. In fact an obvious improvement might be to make the opponent priority coefficient scale with game turn, as this may become more or less relevant as the game progresses.
 
 \end{document}

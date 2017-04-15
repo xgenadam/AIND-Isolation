@@ -61,6 +61,8 @@ def axis_move_product(game, player):
 
 
 def axis_movement(game, player):
+    # Yeah this function is a bit shit but Im desperately lacking sleep and this is working
+    # if there is time I will tidy it up but and make it presentable. (its a big if!)
     x, y = game.get_player_location(player)
 
     up_count = 1
@@ -110,7 +112,6 @@ def axis_movement(game, player):
         if not game.move_is_legal(move=[x + offset_x, y - offset_y]):
             break
         down_right_count += 1
-
 
     directions_list = [up_count,
                        down_count,
@@ -166,6 +167,7 @@ def axis_move_product_adversarial(game, player, opponent_priority_coefficient=2.
 def axis_movement_adversarial(game, player, opponent_priority_coefficient=2.0):
     opponent = game.get_opponent(player)
     return axis_movement(game, player) - opponent_priority_coefficient * axis_movement(game, opponent)
+
 
 # composite methods
 def area_score_move_len_adversarial(game, player, opponent_priority_coefficient=2.0):
