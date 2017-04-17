@@ -1,0 +1,54 @@
+\documentclass[11pt]{article}
+%Gummi|065|=)
+%\title{\textbf{Welcome to Gummi 0.6.5}}
+
+\title{\textbf{Research and Review: AlphaGo}}
+
+
+ \renewcommand{\familydefault}{Hoefler}
+
+\usepackage{amsmath}	
+\usepackage{tikz}
+\usepackage{xcolor}
+\usepackage{float}
+\usepackage{graphics}
+\usepackage{graphicx}
+\usepackage{wrapfig}
+
+\usetikzlibrary{shapes,arrows,chains}
+
+
+\begin{document}
+
+\maketitle
+
+\newpage
+
+\section{Introduction}
+% what is the problem?
+%  action search space large
+%  representation difficult to quantify
+ In the development of game playing AI there have always been certain games present a greater challenge than others, Go is one such game given the large action space and challenge of board evaluation\cite{allis1994searching}. The search space is unfeasibly large to search all possible moves and board evaluation at any stage is non simple. Human player take hundreds of games before being able to develop a rudimentary understanding of deeper strategy\cite{allis1994searching}. Previous techniques have used Monte Carlo search trees in an attempt to search action/state spaces in a timely manner\cite{mcts_remi}.
+
+ Presented here is a review of AlphaGo\cite{alphago}, where novel deep learning techniques were applied to the move selection and board evaluation.
+
+\section{Move selection and board valuation}
+% Monte carlo tree search
+\subsection{Deep learning}
+In contrast to Monte Carlo (random choice) methods AlphaGo uses deep neural networks\cite{alphago} to efficiently limit move selection search space. Among the innovative approaches used by the AlphaGo team was the  high level abstraction of the game state (presented in data table 2 of \cite{alphago}). This representation of the game state is simple yet powerful, as demonstrated by the significant win rate of AlphaGo against both human and other state-of-the-art AI.
+% AlphaGo deep neural nets for move selection
+%  initially trained off model human moves (supervised learner), duplicate network further trained off self play (reinforcement learner) this performed better for move evaluation
+The deep neural network used here was initially a supervised learner trained on a set of expert human plays. A duplicate of this network was then trained further, via reinforcement techniques, where the agent was playing against itself. It is worth noting that to prevent over fitting at this stage the network was also trained against previous iterations of itself. In a strange twist the agent used from which the valuation function was derived, in this case was not the reinforcement trained policy network but the supervised learner from which it evolved. This is interesting given that the reinforcement learner selected moves of greater utility than the supervised learner but was better at game valuation.
+% supervised learner performed better than reinforcement learner
+ It was postulated in \cite{alphago} that this was due to the reinforcement enhanced policy network, while picking better moves, did not predict opponents move to the same accuracy, \cite{alphago} says that this significantly affected win percentages.
+
+\subsection{Hybrid MCTS technique}
+\cite{alphago} found that their best agent was a hybrid of their deep learners and a variation of MCTS where moves were selected at each layer via a fast policy network to sample moves during MCTS rollouts. Their fully hybrid agent achieved 95\% win rate vs agents that favored one technique over the other.
+
+\section{In summary}
+By developing an agent that is better at Go than every other AI and the human player that they failed to defeat, AlphaGo is on the forefront of AI and has provided a proof of concept for AI applications that, this writer believes, demonstrates that AI can solve problems that are not typically suspected to be feasible for this problem domain.
+
+\bibliography{refs.bib}
+\bibliographystyle{plain}
+
+\end{document}
