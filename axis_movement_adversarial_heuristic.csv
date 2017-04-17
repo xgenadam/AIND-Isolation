@@ -1,0 +1,13 @@
+ID_Improved,Random,0.95
+ID_Improved,MM_Null,0.9
+ID_Improved,MM_Open,0.5
+ID_Improved,MM_Improved,0.65
+ID_Improved,AB_Null,0.95
+ID_Improved,AB_Open,0.8
+ID_Improved,AB_Improved,0.65
+Student,MM_Null,0.9
+Student,MM_Open,0.7
+Student,MM_Improved,0.65
+Student,AB_Null,0.85
+Student,AB_Open,0.45
+Student,AB_Improved,0.8

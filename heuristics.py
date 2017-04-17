@@ -65,64 +65,13 @@ def axis_movement(game, player):
     # if there is time I will tidy it up but and make it presentable. (its a big if!)
     x, y = game.get_player_location(player)
 
-    up_count = 1
-    for offset in range(1):
-        if not game.move_is_legal(move=[x, y + offset]):
-            break
-        up_count += 1
+    num_axis_available = 0
+    for direction in utils.Directions2D.values():
+        x_prime = x + direction[0]
+        y_prime = y + direction[1]
+        if game.move_is_legal(move=[x_prime, y_prime]):
+            num_axis_available += 1
 
-    down_count = 1
-    for offset in range(1):
-        if not game.move_is_legal(move=[x, y - offset]):
-            break
-        down_count += 1
-
-    left_count = 1
-    for offset in range(1):
-        if not game.move_is_legal(move=[x - offset, y]):
-            break
-        left_count += 1
-
-    right_count = 1
-    for offset in range(1):
-        if not game.move_is_legal(move=[x + offset, y]):
-            break
-        right_count += 1
-
-    up_left_count = 1
-    for offset_x, offset_y in zip(range(1), range(1)):
-       if not game.move_is_legal(move=[x - offset_x, y + offset_y]):
-           break
-       up_left_count += 1
-
-    up_right_count = 1
-    for offset_x, offset_y in zip(range(1), range(1)):
-        if not game.move_is_legal(move=[x + offset_x, y + offset_y]):
-            break
-        up_right_count += 1
-
-    down_left_count = 1
-    for offset_x, offset_y in zip(range(1), range(1)):
-        if not game.move_is_legal(move=[x - offset_x, y - offset_y]):
-            break
-        down_left_count += 1
-
-    down_right_count = 1
-    for offset_x, offset_y in zip(range(1), range(1)):
-        if not game.move_is_legal(move=[x + offset_x, y - offset_y]):
-            break
-        down_right_count += 1
-
-    directions_list = [up_count,
-                       down_count,
-                       left_count,
-                       right_count,
-                       up_left_count,
-                       up_right_count,
-                       down_left_count,
-                       down_right_count]
-
-    num_axis_available = len([direction for direction in directions_list if direction > 1])
 
     return float(num_axis_available/8.0 * len(game.get_legal_moves(player)))
 
@@ -164,9 +113,11 @@ def axis_move_product_adversarial(game, player, opponent_priority_coefficient=2.
            - opponent_priority_coefficient * axis_move_product(game, opponent)
 
 
-def axis_movement_adversarial(game, player, opponent_priority_coefficient=2.0):
+def axis_movement_adversarial(game, player, opponent_priority_coefficient=4.0):
     opponent = game.get_opponent(player)
-    return axis_movement(game, player) - opponent_priority_coefficient * axis_movement(game, opponent)
+    return (axis_movement(game, player)
+            - opponent_priority_coefficient
+            * axis_movement(game, opponent))
 
 
 # composite methods
