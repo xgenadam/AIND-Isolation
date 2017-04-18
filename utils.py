@@ -1,5 +1,3 @@
-from collections import OrderedDict
-from itertools import chain
 import numpy as np
 
 from isolation import Board
@@ -120,7 +118,6 @@ class NeighbourArray(object):
                                location not in cluster]
 
         return neighbour_locations
-
 
 class Node(object):
     def __init__(self, parent, board, move=None, depth=None, children=None, player=None):
