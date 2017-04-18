@@ -1,0 +1,8 @@
+opponent id_improved area_score_adversarial_heuristic.csv axis_movement_adversarial_heuristic.csv move_len_adversarial_heuristic.csv
+MM_Open 0.6333333333333333 0.15 0.7 0.5
+AB_Improved 0.6 0.15 0.8 0.85
+MM_Null 0.6 0.5 0.9 0.9
+Random 0.8999999999999999 0.85 1.0 0.85
+AB_Open 0.6833333333333332 0.2 0.45 0.7
+AB_Null 0.9166666666666666 0.45 0.85 0.9
+MM_Improved 0.6999999999999998 0.1 0.65 0.8
